@@ -1,3 +1,4 @@
+// Elementos DOM
 const passwordList = document.getElementById("passwordList");
 const siteInput = document.getElementById("site");
 const loginInput = document.getElementById("login");
@@ -9,18 +10,25 @@ const cancelEditButton = document.getElementById("cancelEditButton");
 
 let editingId = null;
 
-// Mostrar email do usuário
-auth.onAuthStateChanged(user => {
-  if (user) {
-    window.currentUser = user;
-    document.getElementById("userEmail").textContent = user.email;
-    loadPasswords();
-  } else {
-    window.location.href = "index.html";
-  }
-});
+// Quando o DOM estiver carregado
+window.onload = function () {
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      window.currentUser = user;
+      document.getElementById("userEmail").textContent = user.email;
+      loadPasswords();
+    } else {
+      window.location.href = "index.html";
+    }
+  });
 
-// Carregar senhas do Firestore (com numeração)
+  // Garantir que os botões estejam conectados
+  if (addButton) addButton.onclick = addItem;
+  if (saveEditButton) saveEditButton.onclick = saveEdit;
+  if (cancelEditButton) cancelEditButton.onclick = cancelEdit;
+};
+
+// Carregar senhas do Firestore
 function loadPasswords() {
   const user = auth.currentUser;
   if (!user) return;
@@ -28,13 +36,12 @@ function loadPasswords() {
   db.collection("users")
     .doc(user.uid)
     .collection("passwords")
-    .orderBy("createdAt", "desc") // Do mais novo para o mais antigo
+    .orderBy("createdAt", "desc")
     .onSnapshot(snapshot => {
       passwordList.innerHTML = "";
-      let index = 1; // Número sequencial: 1, 2, 3...
+      let index = 1;
       snapshot.forEach(doc => {
         const data = doc.data();
-
         const li = document.createElement("li");
         li.innerHTML = `
           <strong>[${index}] ${escapeHtml(data.site)}</strong><br>
@@ -96,7 +103,8 @@ function saveEdit() {
       showMessage("✅ Alterações salvas!");
     })
     .catch(err => {
-      alert("Erro ao salvar: " + err.message);
+      console.error("Erro ao atualizar:", err);
+      alert("Erro: " + err.message);
     });
 }
 
@@ -106,17 +114,29 @@ function cancelEdit() {
   showMessage("Edição cancelada.");
 }
 
-// Adicionar novo item
+// ✅ ADICIONAR ITEM CORRIGIDO
 function addItem() {
-  const site = siteInput.value.trim();
-  const login = loginInput.value.trim();
-  const senha = senhaInput.value.trim();
+  console.log("Botão Adicionar clicado"); // Depuração
+
+  const site = siteInput?.value?.trim();
+  const login = loginInput?.value?.trim();
+  const senha = senhaInput?.value?.trim();
   const user = auth.currentUser;
 
+  console.log("Dados coletados:", { site, login, senha, user });
+
   if (!site || !login || !senha) {
-    alert("Preencha todos os campos!");
+    alert("⚠️ Preencha todos os campos!");
     return;
   }
+
+  if (!user) {
+    alert("❌ Usuário não autenticado. Faça login novamente.");
+    window.location.href = "index.html";
+    return;
+  }
+
+  console.log("Tentando salvar no Firestore...");
 
   db.collection("users")
     .doc(user.uid)
@@ -128,9 +148,14 @@ function addItem() {
       createdAt: new Date()
     })
     .then(() => {
-      clearForm();
+      console.log("✅ Item salvo com sucesso!");
+      siteInput.value = "";
+      loginInput.value = "";
+      senhaInput.value = "";
+      showMessage("✅ Login adicionado com sucesso!");
     })
     .catch(err => {
+      console.error("❌ Erro ao salvar no Firestore:", err);
       alert("Erro ao salvar: " + err.message);
     });
 }
@@ -149,7 +174,8 @@ function deleteItem(id) {
       showMessage("🗑️ Login excluído!");
     })
     .catch(err => {
-      alert("Erro ao excluir: " + err.message);
+      console.error("Erro ao excluir:", err);
+      alert("Erro: " + err.message);
     });
 }
 

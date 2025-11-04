@@ -1,4 +1,4 @@
-// Configuração do Firebase
+// 🔥 Configuração do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAvO11jgajqUl-Zh0vxsDyO5BLf9CWBMiA",
   authDomain: "cofre-de-senhas-2d1ed.firebaseapp.com",

@@ -1,4 +1,3 @@
-// Alternar entre abas
 function openTab(tabName) {
   document.getElementById("loginForm").classList.remove("active");
   document.getElementById("registerForm").classList.remove("active");
@@ -14,7 +13,6 @@ function openTab(tabName) {
   }
 }
 
-// Cadastrar usuário
 function register() {
   const email = document.getElementById("regEmail").value;
   const password = document.getElementById("regPassword").value;
@@ -41,7 +39,6 @@ function register() {
     });
 }
 
-// Login
 function login() {
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPassword").value;
@@ -58,14 +55,12 @@ function login() {
     });
 }
 
-// Mostrar erro
 function showError(id, msg) {
   const el = document.getElementById(id);
   el.textContent = msg;
   el.style.display = "block";
 }
 
-// Mostrar mensagem temporária
 function showMessage(text) {
   const toast = document.createElement("div");
   toast.textContent = text;
@@ -81,7 +76,6 @@ function showMessage(text) {
   }, 3000);
 }
 
-// Verifica autenticação
 window.onload = function () {
   auth.onAuthStateChanged(user => {
     const isVault = window.location.pathname.includes("vault.html");
