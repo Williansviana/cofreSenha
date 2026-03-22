@@ -1,3 +1,4 @@
+// Alternar entre abas
 function openTab(tabName) {
   document.getElementById("loginForm").classList.remove("active");
   document.getElementById("registerForm").classList.remove("active");
@@ -13,6 +14,7 @@ function openTab(tabName) {
   }
 }
 
+// Cadastrar usuário
 function register() {
   const email = document.getElementById("regEmail").value;
   const password = document.getElementById("regPassword").value;
@@ -20,6 +22,12 @@ function register() {
   const error = document.getElementById("registerError");
 
   error.style.display = "none";
+
+  if (!email || !password) {
+    showError("registerError", "Preencha todos os campos.");
+    return;
+  }
+
   if (password !== confirm) {
     showError("registerError", "As senhas não coincidem.");
     return;
@@ -33,12 +41,16 @@ function register() {
   auth.createUserWithEmailAndPassword(email, password)
     .then(() => {
       showMessage("✅ Conta criada! Redirecionando...");
+      setTimeout(() => {
+        window.location.href = "vault.html";
+      }, 1500);
     })
     .catch(err => {
       showError("registerError", err.message);
     });
 }
 
+// Fazer login
 function login() {
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPassword").value;
@@ -46,21 +58,35 @@ function login() {
 
   error.style.display = "none";
 
+  if (!email || !password) {
+    showError("loginError", "Preencha todos os campos.");
+    return;
+  }
+
   auth.signInWithEmailAndPassword(email, password)
     .then(() => {
       window.location.href = "vault.html";
     })
     .catch(err => {
-      showError("loginError", err.message);
+      let msg = err.message;
+
+      // Mensagens amigáveis
+      if (msg.includes("user-not-found")) msg = "Usuário não encontrado.";
+      else if (msg.includes("wrong-password")) msg = "Senha incorreta.";
+      else if (msg.includes("invalid-email")) msg = "Email inválido.";
+
+      showError("loginError", msg);
     });
 }
 
-function showError(id, msg) {
+// Mostrar erro
+function showError(id, text) {
   const el = document.getElementById(id);
-  el.textContent = msg;
+  el.textContent = text;
   el.style.display = "block";
 }
 
+// Mostrar mensagem temporária
 function showMessage(text) {
   const toast = document.createElement("div");
   toast.textContent = text;
@@ -76,16 +102,23 @@ function showMessage(text) {
   }, 3000);
 }
 
+// Verifica autenticação ao carregar
 window.onload = function () {
+  // Verifica se estamos em vault.html
+  const isVault = window.location.pathname.includes("vault.html");
+
   auth.onAuthStateChanged(user => {
-    const isVault = window.location.pathname.includes("vault.html");
-    if (user && isVault) {
-      window.currentUser = user;
-    } else if (!user && isVault) {
+    if (isVault && !user) {
+      // Se tentou acessar o cofre sem login
       window.location.href = "index.html";
+    } else if (isVault && user) {
+      // Usuário logado → tudo certo
+      window.currentUser = user;
     }
+    // Em index.html, não faz nada
   });
 
+  // Abre aba de login por padrão
   if (document.getElementById("loginForm")) {
     openTab("login");
   }

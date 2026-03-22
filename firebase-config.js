@@ -1,4 +1,4 @@
-// 🔥 Configuração do Firebase
+// 🔥 Configuração do Firebase (seu projeto)
 const firebaseConfig = {
   apiKey: "AIzaSyAvO11jgajqUl-Zh0vxsDyO5BLf9CWBMiA",
   authDomain: "cofre-de-senhas-2d1ed.firebaseapp.com",
@@ -13,4 +13,3 @@ firebase.initializeApp(firebaseConfig);
 
 // Serviços
 const auth = firebase.auth();
-const db = firebase.firestore();
