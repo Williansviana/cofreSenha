@@ -1,4 +1,3 @@
-// 🔥 Configuração do Firebase (seu projeto)
 const firebaseConfig = {
   apiKey: "AIzaSyAvO11jgajqUl-Zh0vxsDyO5BLf9CWBMiA",
   authDomain: "cofre-de-senhas-2d1ed.firebaseapp.com",
@@ -11,5 +10,6 @@ const firebaseConfig = {
 // Inicializa o Firebase
 firebase.initializeApp(firebaseConfig);
 
-// Serviços
+// Instâncias dos serviços
 const auth = firebase.auth();
+const db = firebase.firestore(); // <--- Essencial para o cofre funcionar
